@@ -1,0 +1,115 @@
+﻿<script src="~/Scripts/AssignBook/AssignBook.js"></script>
+
+
+<body class="BodyBack">
+    <div class="container">
+        <div class="row">
+
+            <div class="content-section-a BoxProp">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <h3>Assigned Books History</h3>
+                        <section class="panel">
+                            <div class="panel-body">
+                                <form class="form-inline" role="form">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="textSearch" placeholder="Enter KeyWords...">
+                                    </div>
+                                    <button type="button" id="btnSearch" class="btn btn-s-md btn-default btn-primary">Search &nbsp;<span class="glyphicon glyphicon-search"></span></button>
+                                    <button type="button" id="btnClear" class="btn btn-s-md btn-default btn-primary ">Clear &nbsp;<span class="glyphicon glyphicon-refresh"></span></button>
+                                </form>
+                            </div>
+
+                        </section>
+                    </header>
+                </section>
+                <section class="panel">
+                    <span style='padding:3%;color:red' class='glyphicon glyphicon-warning-sign'></span>     <label class="">Books OverDue</label>
+                    <span style='padding:3%; color:green' class='glyphicon glyphicon-time'></span><label class="">Books Not OverDue Yet</label>
+                </section>
+                <section class="panel" id="messagediv" style="display:none;color:green;font-size:20px"></section>
+                <section class="panel" id="BookAddBorrower" style="display:none;">
+                    <header class="panel-heading">
+                        <section class="panel">
+                            <div class="panel-body">
+                                <div class="container">
+                                    <form role="form">
+                                        <div class="form-group col-sm-4">
+                                            <label>Author</label>
+                                            <input type="text" class="form-control" id="bFirstName" placeholder="First Name">
+                                        </div>
+                                        <div class="form-group col-sm-4">
+                                            <label>Quantity</label>
+                                            <input type="text" class="form-control" id="bLastName" placeholder="Last Name">
+                                        </div>
+                                        <div class="form-group col-sm-12">
+                                            <button onclick="SaveBorrows();" type="button" class="btn btn-primary">Save</button>
+                                        </div>
+
+                                    </form>
+                                </div>
+
+                            </div>
+                        </section>
+                    </header>
+                </section>
+
+                <div class="table-responsive" style="background:white">
+                    <table id="AssignBooksTable" class="table table-striped m-b-none tableFontSize sTable content-section-b table-hover">
+                        <thead>
+                            <tr>
+                                <th width="10%">Book Title</th>
+                                <th width="20%">Borrower</th>
+                                <th width="15%">Date Issued</th>
+                                <th width="15%">Due Date</th>
+                                <th width="15%">Returned Yet</th>
+                                <th width="15%">OverDue Status</th>
+                                <th width="15%">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+<script>
+
+    $(document).ready(function () {
+
+        //Result Search Starts here based on the Filter Value
+        StartSearch($("#textSearch").val());
+
+        $("#btnSearch").click(function () {
+            StartSearch($("#textSearch").val());
+        });
+
+
+        $("#btnClear").click(function () {
+
+            $("#textSearch").val("")
+            StartSearch($("#textSearch").val());
+        });
+
+        $("#textSearch").keypress(function (e) {
+            if (e.which == 13) {
+
+                StartSearch($("#textSearch").val());
+                return false;
+            }
+        });
+
+
+
+    });
+
+    function SlideDownAdditionDiv() {
+        $("#BookAddBorrower").toggle("slow");
+    }
+
+</script>
+
+<div style="display:none" id="ConfDialog">Has user Returned this book ?</div>
+

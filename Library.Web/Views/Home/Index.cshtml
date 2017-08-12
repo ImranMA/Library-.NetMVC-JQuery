@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Library Management System</title>
+
+</head>
+<body>     
+    <div class="intro-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="intro-message">
+                        <h1>Library Management System</h1>
+                        <h3>Manage on the Fly !</h3>
+                        <hr class="intro-divider">
+                        <ul class="list-inline intro-social-buttons">
+                            <li>
+                                <a href="@Url.Action("ManageBooks", "Home")" class="btn btn-default btn-lg"><i class="fa fa-book fa-fw"></i> <span class="network-name">Manage Books</span></a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("ManageBorrowers", "Home")"  class="btn btn-default btn-lg"><i class="fa fa-user fa-fw"></i> <span class="network-name">Manage Borrowers</span></a>
+                            </li> 
+                            <li>
+                                <a href="@Url.Action("AssignBooks", "Home")" class="btn btn-default btn-lg"><i class="fa fa-user fa-fw"></i> <span class="network-name">Issued Books</span></a>
+                            </li>                          
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>       
+    </div> 
+</body>
+</html>

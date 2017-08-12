@@ -1,0 +1,103 @@
+﻿@{
+    ViewBag.Title = "Test";
+  
+
+}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>jQuery UI Autocomplete - Remote datasource</title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <style>
+        .ui-autocomplete-loading {
+            background: white url("images/ui-anim_basic_16x16.gif") right center no-repeat;
+        }
+    </style>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $("#birds").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/AutoComplete/AutoCompleteBook",
+                    type: "POST",
+                    dataType: "json",
+                    data: { term: request.term },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item.Title + " , " + item.Author };
+                        }))
+
+                    }
+                })
+            },
+            messages: {
+                noResults: "", results: ""
+            }
+        });
+    })
+    </script>
+</head>
+<body>
+    <br />
+
+    <br />
+
+
+    <br />
+    <br />
+    <div class="ui-widget">
+        <label for="birds">Birds: </label>
+        <input id="birds">
+    </div>
+
+
+</body>
+</html>
+
+@*<!doctype html>
+    <html lang="en">
+    <head>
+        <title></title>
+        <script src="jquery.min.js"></script>
+        <script type="text/javascript" src="http://www.arungudelli.com/Tools/HTML5/jQueryAutoComplete/jquery.typeahead.js"></script>
+        <script src='hogan.js'></script>
+        <link href="http://www.arungudelli.com/Tools/HTML5/jQueryAutoComplete/examples.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript">
+            $(document).ready(function () {
+                //Single DataSet
+                var temp  =["Unites States", "Mexico", "Canada", "Cuba", "Guatemala","Pakistan"];
+
+                $('input.counties').typeahead({
+                    name: 'countries',
+                    local: temp
+
+                });
+
+            });
+        </script>
+    </head>
+    <body>
+        <div align="center">
+            <div>
+                <h3>
+                    A Simple AutoComplete Using jQuery
+                </h3>
+                <p>
+                    by Arunkumar Gudelli
+                </p>
+                <p><a href="http://www.arungudelli.com/2013/10/simple-jquery-autocomplete-search-tutorial" target="_blank">Go Back to Tutorial</a></p>
+            </div>
+            <br />
+            <div style="height:800px">
+                <div style="width: 1000px; height: 300px;">
+                    <div style="float: left; width: 500px">
+                        <h4>Uses Single DataSet</h4>
+                        <input class="counties typeahead" type="text" placeholder="Countries">
+                    </div>
+                </div>                    </div>
+        </div>
+    </body>
+    </html>*@

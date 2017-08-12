@@ -1,0 +1,181 @@
+﻿
+<script src="~/Scripts/Borrowers/Borrowers.js"></script>
+
+<body class="BodyBack">
+    <div class="container">
+        <div class="row">
+            <div class="content-section-a BoxProp">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <h3>Manage Borrowers</h3>
+                        <section class="panel">
+                            <div class="panel-body">
+                                <form class="form-inline" role="form">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="textSearch" placeholder="Enter KeyWords...">
+                                    </div>
+                                    <button type="button" id="btnSearch" class="btn btn-s-md btn-default btn-primary">Search &nbsp;<span class="glyphicon glyphicon-search"></span></button>
+                                    <button type="button" id="btnClear" class="btn btn-s-md btn-default btn-primary ">Clear &nbsp;<span class="glyphicon glyphicon-refresh"></span></button>
+                                </form>
+                                <div>
+                                    <br />
+                                    <button type="button" onclick="SlideDownAdditionDiv();" id="btnAddBook" class="col-sm-3 col-md-2 btn btn-sm btn-primary">Add &nbsp;&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-plus-sign"></span></button>
+                                </div>
+                            </div>
+                        </section>
+                    </header>
+                </section>
+                <section class="panel" id="messagediv" style="display:none;color:green;font-size:20px"></section>
+                <section class="panel" id="BookAddBorrower" style="display:none;">
+                    <header class="panel-heading">
+                        <section class="panel">
+                            <div class="panel-body">
+                                <div class="container">
+                                    <form role="form">
+                                        <div class="form-group col-sm-4">
+                                            <label>First Name</label>
+                                            <input type="text" class="form-control" id="bFirstName" placeholder="First Name">
+                                        </div>
+                                        <div class="form-group col-sm-4">
+                                            <label>Last Name</label>
+                                            <input type="text" class="form-control" id="bLastName" placeholder="Last Name">
+                                        </div>
+                                        <div class="form-group col-sm-12">
+                                            <button onclick="SaveBorrows();" type="button" class="btn btn-primary">Save</button>
+                                        </div>
+
+                                    </form>
+                                </div>
+
+                            </div>
+                        </section>
+                    </header>
+                </section>
+
+                <div class="table-responsive" style="background:white">
+                    <table id="BorrowersTable" class="table table-striped m-b-none tableFontSize sTable content-section-b table-hover">
+                        <thead>
+                            <tr>
+                                <th width="10%">ID</th>
+                                <th width="20%">FirstName</th>
+                                <th width="15%">LastName</th>
+                            </tr>
+                        </thead>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+<script>
+
+    $(document).ready(function () {
+        //Result Search Starts here based on the Filter Value
+        StartSearch($("#textSearch").val());
+
+        $("#btnSearch").click(function () {
+            StartSearch($("#textSearch").val());
+        });
+
+
+        //Refresh the Search filter and table data
+        $("#btnClear").click(function () {
+
+            $("#textSearch").val("")
+            StartSearch($("#textSearch").val());
+        });
+
+
+        //When we press the enter key while focus is on Filter
+        $("#textSearch").keypress(function (e) {
+            if (e.which == 13) {
+                StartSearch($("#textSearch").val());
+                return false;
+            }
+        });
+
+
+
+    });
+
+    //Slide down the AddForm
+    function SlideDownAdditionDiv() {
+        $("#BookAddBorrower").toggle("slow");
+    }
+
+    //Saving the Borrwer
+    function SaveBorrows() {
+
+        if (!ValidateForm())
+            return;
+
+
+        var url = 'http://localhost:60730/api/Borrowers';
+
+        var bModel = {
+            Title: $("#bTitle").val(),
+            FirstName: $("#bFirstName").val(),
+            LastName: $("#bLastName").val()
+        }
+
+        var res = JSON.stringify(bModel);
+        var result = Library_ServiceManager.Post(url, res);
+        if (result[0] == true) {
+            $("#BookAddBorrower").toggle("slow");
+            ClearForm();
+            MesageDiv("Saved Successfully");
+            StartSearch("");
+        }
+    }
+
+    //Validation
+    function ValidateForm() {
+        
+        var bValid = true;
+
+        if ($.trim($("#bFirstName").val()).length == 0) {
+            $("#bFirstName").css("background", "#FFD6D6");
+            bValid = false;
+        } else {
+            $("#bFirstName").css("background", "#D6F5D6");
+            bValid = true;
+        }
+
+
+        if ($.trim($("#bLastName").val()).length == 0) {
+            $("#bLastName").css("background", "#FFD6D6");
+            bValid = false;
+        } else {
+            $("#bLastName").css("background", "#D6F5D6");
+            bValid = true;
+        }
+
+
+        return bValid;
+    }
+
+    //Addition Form is cleared
+    function ClearForm() {
+        $("#bLastName").val("")
+        $("#bFirstName").val("")
+
+        $("#bLastName").css("background", "white")
+        $("#bFirstName").css("background", "white")
+
+    }
+
+    //Message show based on Return value
+    function MesageDiv(message) {
+        var $messageDiv = $('#messagediv'); // get the reference of the div
+        $messageDiv.show().slideDown().html(message); // show and set the message
+        setTimeout(function () { $messageDiv.hide().html(''); }, 3000); // 3 seconds later, hide
+    }
+
+</script>
+
+
+
+

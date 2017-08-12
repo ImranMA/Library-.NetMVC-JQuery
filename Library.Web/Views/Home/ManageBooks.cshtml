@@ -1,0 +1,334 @@
+﻿
+<script src="~/Scripts/Books/Books.js"></script>
+
+<body class="BodyBack">
+    <div class="container">
+        <div class="row">
+            <div class="content-section-a BoxProp">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <h3>Manage Books</h3>
+                        <section class="panel">
+                            <div class="panel-body">
+                                <form class="form-inline" role="form">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="textSearch" placeholder="Enter KeyWords...">
+                                    </div>
+                                    <button type="button" id="btnSearch" class="btn btn-s-md btn-default btn-primary">Search &nbsp;<span class="glyphicon glyphicon-search"></span></button>
+                                    <button type="button" id="btnClear" class="btn btn-s-md btn-default btn-primary ">Clear &nbsp;<span class="glyphicon glyphicon-refresh"></span></button>
+                                </form>
+                                <div>
+                                    <br />
+                                    <button type="button" onclick="SlideDownAddBookDiv();" id="btnAddBook" class="col-sm-3 col-md-2 btn btn-sm btn-primary">Add &nbsp;&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-plus-sign"></span></button>
+                                </div>
+                            </div>
+                        </section>
+                    </header>
+                </section>
+               
+                <section class="panel" id="messagediv" style="display:none;color:green;font-size:20px">
+                   
+                </section>
+                <section class="panel" id="BookAddForm" style="display:none;">
+                    <header class="panel-heading">
+                        <section class="panel">
+                            <div class="panel-body">
+                                <div class="container">
+                                    <form role="form">
+                                        <div class="form-group col-sm-4">
+                                            <label>Title</label>
+                                            <input type="text" class="form-control" id="bTitle" placeholder="Enter Title">
+                                        </div>
+                                        <div class="form-group col-sm-4">
+                                            <label>Author</label>
+                                            <input type="text" class="form-control" id="bAuthor" placeholder="Enter Author">
+                                        </div>
+                                        <div class="form-group col-sm-2">
+                                            <label>Quantity</label>
+                                            <input type="number" class="form-control" id="bQty" placeholder="Enter Quantity">
+                                        </div>
+                                        <div class="form-group col-sm-12">
+                                            <button onclick="SaveBook();" type="button" class="btn btn-primary">Submit</button>
+                                        </div>
+
+                                    </form>
+                                </div>
+
+                            </div>
+                        </section>
+                    </header>
+                </section>
+
+                <div class="table-responsive" style="background:white">
+                    <table id="BooksTable" class="table table-striped m-b-none tableFontSize sTable content-section-b table-hover">
+                        <thead>
+                            <tr>
+                                <th width="10%">ID</th>
+                                <th width="20%">Title</th>
+                                <th width="15%">Author</th>
+                                <th width="15%">In Stock</th>
+                                <th width="20%">Total Qty</th>
+                                <th width="20%">Total Issued</th>
+                                <th width="15%">Assign</th>
+                            </tr>
+                        </thead>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+
+<script>
+
+    $(document).ready(function () {
+        //Result Search Starts here based on the Filter Value
+        StartSearch($("#textSearch").val());
+
+        $("#btnSearch").click(function () {
+            StartSearch($("#textSearch").val());
+        });
+
+
+        $("#btnClear").click(function () {
+
+            $("#textSearch").val("")
+            StartSearch($("#textSearch").val());
+        });
+
+        $("#textSearch").keypress(function (e) {
+            if (e.which == 13) {
+
+                StartSearch($("#textSearch").val());
+                return false;
+            }
+        });
+
+
+        $("#dialogBorrowers").autocomplete({
+
+            source: function (request, response) {
+                $.ajax({
+                    url: "/AutoComplete/AutoCompleteBorrowers",
+                    type: "POST",
+                    dataType: "json",
+                    data: { term: request.term },
+                    success: function (data) {
+                        //Clear here the id of book
+                        response($.map(data, function (item) {
+                            $("#hBorrowerID").val("");
+                            return { label: item.FirstName + " , " + item.LastName, value: item.ID };
+                        }))
+                    }
+                })
+            },
+            messages: {
+                noResults: "", results: ""
+            },
+            select: function (a, b) {
+                
+                // $("#dialogBooks").val(b.item.label)
+                $("#dialogBorrowers").val(b.item.label)
+                $("#hBorrowerID").val(b.item.value)
+                return false;
+
+            },
+        });
+
+    });
+
+    function SlideDownAddBookDiv() {
+        $("#BookAddForm").toggle("slow");
+    }
+
+    function OpenDialog(id, title) {
+
+        $("#dialogBooks").val(decodeURIComponent(title));
+        $("#hBookID").val(id);
+
+
+        $("#dialog").dialog({
+            modal: true,
+            width: "auto",
+
+            buttons: {
+                "Assign": {
+                    text: 'Assign',
+                    class: 'Assign',
+                    click: function () {
+
+
+                        if ($("#hBorrowerID").val().length == 0) {
+                            $("#warningMessage").show();
+                            return false;
+                        }
+
+                        AssignBooks();
+                        ClearFields();
+                        $(this).dialog('destroy');
+                    }
+                },
+                "Cancel": {
+                    text: 'Cancel',
+                    class: 'Cancel',
+                    click: function () {
+                        ClearFields();
+                        $(this).dialog('destroy');
+                    }
+                }
+            },
+            beforeClose: function (event) {
+                if (event.keyCode === $.ui.keyCode.ESCAPE) {
+                    $(this).dialog('destroy');
+                    ClearFields();
+                    return false;
+                }
+            }
+
+        });
+
+        $(".ui-dialog-titlebar").hide();
+    }
+
+    function ValidateForm() {
+        
+        var bValid = true;
+
+        if ($.trim($("#bTitle").val()).length == 0) {
+            $("#bTitle").css("background", "#FFD6D6");
+            bValid = false;
+        } else {
+            $("#bTitle").css("background", "#D6F5D6");
+            bValid = true;
+        }
+
+
+        if ($.trim($("#bQty").val()).length == 0) {
+            $("#bQty").css("background", "#FFD6D6");
+            bValid = false;
+        } else {
+            $("#bQty").css("background", "#D6F5D6");
+            bValid = true;
+        }
+
+
+        if ($.trim($("#bAuthor").val()).length == 0) {
+            $("#bAuthor").css("background", "#FFD6D6");
+            bValid = false;
+        } else {
+            $("#bAuthor").css("background", "#D6F5D6");
+            bValid = true;
+        }
+
+
+        return bValid;
+    }
+
+    function ClearFields() {
+        $("#dialogBooks").val(""); $("#dialogBorrowers").val("");
+    }
+
+    function ClearForm() {
+        $("#bAuthor").val("")
+        $("#bQty").val("")
+        $("#bTitle").val("")
+
+        $("#bAuthor").css("background", "white")
+        $("#bTitle").css("background", "white")
+        $("#bQty").css("background", "white")
+    }
+
+    function SaveBook() {
+
+        if (!ValidateForm())
+            return;
+
+        var url = 'http://localhost:60730/api/Books';
+
+        var bModel = {
+            Title: $("#bTitle").val(),
+            Author: $("#bAuthor").val(),
+            TotalInStock: $("#bQty").val()
+        }
+
+        var res = JSON.stringify(bModel);
+        var result = Library_ServiceManager.Post(url, res);
+        if (result[0] == true) {
+            $("#BookAddForm").toggle("slow");
+            ClearForm();
+            MesageDiv("Saved Successfully");
+            StartSearch("");
+        }
+    }
+
+    function AssignBooks() {
+        var url = 'http://localhost:60730/api/AssignBook';
+
+
+       
+
+
+
+        var bModel = {
+            BorrowerID: $("#hBorrowerID").val(),
+            BookID: $("#hBookID").val()
+        }
+
+        var res = JSON.stringify(bModel);
+        var result = Library_ServiceManager.Post(url, res);
+        if (result[0] == true) {
+            MesageDiv("Assigned Successfully");
+            StartSearch("");
+        }
+    }
+
+    function MesageDiv(message) {
+        var $messageDiv = $('#messagediv'); // get the reference of the div
+        $messageDiv.show().slideDown().html(message); // show and set the message
+        setTimeout(function () { $messageDiv.hide().html(''); }, 3000); // 3 seconds later, hide      
+    }
+
+</script>
+
+
+<div id="dialog" title="Basic dialog" style="display:none">
+    <section class="panel">
+        <header class="panel-heading">
+            <div>
+                <h2>Assign Book</h2>
+            </div>
+            <section class="panel">
+                <div class="panel-body">
+                    <div class="container">
+                        <form class="form-horizontal" role="form">
+                            <div class="form-group">
+                                <label for="dialogBooks" class="col-lg-1 control-label">Title</label>
+                                <div class="col-lg-4">
+                                    <input readonly type="text" class="form-control" id="dialogBooks" placeholder="Book Title">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="dialogBorrowers" class="col-lg-1 control-label">Borrower</label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" id="dialogBorrowers" placeholder="Borrower">
+                                     <br />
+                                    <label style="display:none" id="warningMessage" class="label-warning">Please Select Borrower Name From Auto Suggestion Box !</label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div style="display:none">
+                        <input type="hidden" id="hBorrowerID"><input />
+                        <input type="hidden" id="hBookID"><input />
+                    </div>
+                </div>
+            </section>
+        </header>
+    </section>
+</div>
+
+
+

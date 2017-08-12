@@ -1,0 +1,56 @@
+﻿#BooksTable th, td ,#AssignBooksTable th, td  , #BorrowersTable th, td {
+    text-align: center;
+}
+
+
+.BodyBack {
+    background: lightgray;
+    padding: 5%;
+}
+
+
+.BoxProp {
+    box-shadow: 3px 14px 18px 7px Gray;
+    border-radius: 10px;
+    padding:3%;
+}
+
+
+
+.navbar-default {
+    background-color: #4c5566;
+    border-color: #4c5566;
+}
+
+    .navbar-default .navbar-nav > li > a {
+        color: white;
+    }
+
+input[type='text'].ui-autocomplete-loading {
+    /*background: white url("../../Images/ui-anim_basic_16x16.gif") right center no-repeat;*/
+}
+
+#ui-id-1 {
+    z-index: 99999999999999;
+}
+
+.ui-dialog{
+    background:white;
+}
+
+
+
+ 
+.btn-primary {
+    background: gray;
+    color: #ffffff;
+}
+ 
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
+    background: #33a6cc;
+}
+ 
+.btn-primary:active, .btn-primary.active {
+    background: #007299;
+    box-shadow: none;
+}
